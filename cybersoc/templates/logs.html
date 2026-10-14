@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CyberSOC - Logs de acesso</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+
+<body>
+    <nav class="menu">
+        <a href="{{ url_for('dashboard.dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('dashboard.logs_acesso') }}">Logs de acesso</a>
+
+        <form method="GET" action="{{ url_for('dashboard.logs_acesso') }}" class="filtros">
+            <input type="text" name="ip" placeholder="Pesquisar endereço IP..." value="{{ filtro_ip | default('') }}">
+
+            <select name="status">
+                <option value="">Todos os status</option>
+
+                <option value="Falha" {% if filtro_status | default('')=='Falha' %}selected{% endif %}>
+                    Falha
+                </option>
+
+                <option value="Sucesso" {% if filtro_status | default('')=='Sucesso' %}selected{% endif %}>
+                    Sucesso
+                </option>
+            </select>
+
+            <button type="submit">Filtrar</button>
+
+            <a href="{{ url_for('dashboard.logs_acesso') }}">Limpar</a>
+        </form>
+
+
+        <a href="{{ url_for('dashboard.ips_suspeitos') }}">IPs suspeitos</a>
+    </nav>
+
+    <main>
+        <h1>Logs de acesso</h1>
+        <p>Registros dos eventos simulados no sistema.</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Horário</th>
+                    <th>IP</th>
+                    <th>Usuário</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr>
+                    <td>{{ log.horario }}</td>
+                    <td>{{ log.ip }}</td>
+                    <td>{{ log.usuario }}</td>
+                    <td>{{ log.status }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4">Nenhum evento registrado.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </main>
+</body>
+
+</html>

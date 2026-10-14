@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>CyberSOC Dashboard</title>
+
+    <!-- Arquivo CSS -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+
+    <!-- Arquivo JavaScript separado -->
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+  </head>
+
+  <body>
+    <!-- Menu lateral -->
+    <aside>
+      <h2>🛡️ CyberSOC</h2>
+      <p>Centro de Segurança</p>
+
+      <hr />
+
+      <hr />
+
+      <nav class="menu">
+        <a href="{{ url_for('dashboard.dashboard') }}"> ▣ Dashboard </a>
+
+        <a href="{{ url_for('dashboard.logs_acesso') }}"> ▤ Logs de acesso </a>
+
+        <a href="{{ url_for('dashboard.ips_suspeitos') }}"> ⚠ IPs suspeitos </a>
+      </nav>
+    </aside>
+
+    <!-- Conteúdo principal -->
+    <main>
+      <header>
+        <h1>Dashboard de Segurança</h1>
+        <p>Monitoramento de eventos de segurança</p>
+      </header>
+
+      <!-- Cartões de estatísticas -->
+      <section class="cards">
+        <article>
+          <h3>❌ Tentativas falhas</h3>
+          <strong id="falha">{{ falhas }}</strong>
+        </article>
+
+        <article>
+          <h3>✅ Tentativas bem-sucedidas</h3>
+          <strong id="sucesso">{{ sucessos }}</strong>
+        </article>
+
+        <article>
+          <h3>🌐 IPs registrados</h3>
+          <strong id="total-ips">
+            {{ logs | map(attribute='ip') | unique | list | length }}
+          </strong>
+        </article>
+      </section>
+
+      <!-- Tabela de eventos -->
+      <section class="painel">
+        <h2>Últimos registros</h2>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Endereço IP</th>
+              <th>Usuário</th>
+              <th>Horário</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+
+          <tbody id="tabela-logs">
+            {% for log in logs %}
+            <tr>
+              <td>{{ log.ip }}</td>
+              <td>{{ log.usuario }}</td>
+              <td>{{ log.horario }}</td>
+
+              <td class="{{ 'falha' if log.status == 'Falha' else 'sucesso' }}">
+                {{ log.status }}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </section>
+    </main>
+  </body>
+</html>

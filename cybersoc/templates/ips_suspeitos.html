@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CyberSOC - IPs suspeitos</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body>
+    <nav class="menu">
+      <a href="{{ url_for('dashboard.dashboard') }}">Dashboard</a>
+      <a href="{{ url_for('dashboard.logs_acesso') }}">Logs de acesso</a>
+      <a href="{{ url_for('dashboard.ips_suspeitos') }}">IPs suspeitos</a>
+    </nav>
+
+    <main>
+      <h1>IPs suspeitos</h1>
+      <p>IPs com três ou mais tentativas de acesso falhas.</p>
+
+      {% set alto_risco = suspeitos | selectattr('risco', 'equalto', 'Alto') |
+      list %} {% if alto_risco %}
+      <div class="alerta-seguranca">
+        <h2>⚠️ ALERTA DE SEGURANÇA</h2>
+        <p>
+          Foram encontrados {{ alto_risco | length }} IP(s) com nível de risco
+          alto.
+        </p>
+
+        <ul>
+          {% for suspeito in alto_risco %}
+          <li>
+            IP {{ suspeito.ip }} — {{ suspeito.total_falhas }} tentativas falhas
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      <table>
+        <thead>
+          <tr>
+            <th>Endereço IP</th>
+            <th>Total de falhas</th>
+            <th>Nível de risco</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for suspeito in suspeitos %}
+          <tr>
+            <td>{{ suspeito.ip }}</td>
+            <td>{{ suspeito.total_falhas }}</td>
+            <td>
+              <span class="risco risco-{{ suspeito.risco | lower }}">
+                {{ suspeito.risco }}
+              </span>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="3">Nenhum IP suspeito encontrado.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </main>
+  </body>
+</html>
